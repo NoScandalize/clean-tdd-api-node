@@ -6,10 +6,23 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "lint-staged": {
+    "*.js": [
+      "standard --fix",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "keywords": [],
   "author": "Douglas <douglaswesley77@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "hysky": "^1.0.1",
+    "lint-staged": "^15.2.7",
     "standard": "^17.1.0"
   }
 }
