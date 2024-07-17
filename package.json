@@ -1,0 +1,12 @@
+{
+  "name": "clean-tdd-api-node",
+  "version": "1.0.0",
+  "description": "An API project built using the concepts of tdd and clean architecture",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Douglas <douglaswesley77@gmail.com>",
+  "license": "MIT"
+}
