@@ -8,5 +8,8 @@
   },
   "keywords": [],
   "author": "Douglas <douglaswesley77@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "standard": "^17.1.0"
+  }
 }
