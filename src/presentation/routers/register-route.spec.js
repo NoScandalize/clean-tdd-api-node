@@ -1,6 +1,7 @@
 class RegisterRouter {
   async exec (httpRequest) {
-    if (!httpRequest.body.username || !httpRequest.body.email || !httpRequest.body.password || !httpRequest.body.confirmPassword) {
+    const { username, email, password, confirmPassword } = httpRequest.body
+    if (!username || !email || !password || !confirmPassword) {
       return {
         statusCode: 400
       }
