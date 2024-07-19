@@ -4,7 +4,7 @@
   "description": "An API project built using the concepts of tdd and clean architecture",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --watchAll",
     "test:staged": "jest"
   },
   "lint-staged": {
