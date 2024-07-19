@@ -4,11 +4,13 @@
   "description": "An API project built using the concepts of tdd and clean architecture",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:staged": "jest"
   },
   "lint-staged": {
     "*.js": [
       "standard --fix",
+      "npm run test:staged",
       "git add"
     ]
   },
@@ -16,6 +18,11 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
   },
   "keywords": [],
   "author": "Douglas <douglaswesley77@gmail.com>",
