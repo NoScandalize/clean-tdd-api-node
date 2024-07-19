@@ -1,6 +1,6 @@
 class RegisterRouter {
   async exec (httpRequest) {
-    if (!httpRequest.body.username || !httpRequest.body.email || !httpRequest.body.password) {
+    if (!httpRequest.body.username || !httpRequest.body.email || !httpRequest.body.password || !httpRequest.body.confirmPassword) {
       return {
         statusCode: 400
       }
@@ -42,6 +42,19 @@ describe('register router', () => {
         username: 'any_username',
         email: 'any_email@mail.com',
         confirmPassword: 'any_password'
+      }
+    }
+    const httpResponse = await sut.exec(httpRequest)
+    expect(httpResponse.statusCode).toBe(400)
+  })
+
+  test('should return 400 if confirmPassword is not provided', async () => {
+    const sut = new RegisterRouter()
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: 'any_password'
       }
     }
     const httpResponse = await sut.exec(httpRequest)
