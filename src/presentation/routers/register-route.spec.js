@@ -1,45 +1,5 @@
-class RegisterRouter {
-  async exec (httpRequest) {
-    if (!httpRequest || !httpRequest.body) {
-      return HttpRequest.internalServerError()
-    }
-    const { username, email, password, confirmPassword } = httpRequest.body
-    if (!username) {
-      return HttpRequest.badRequest('username')
-    }
-    if (!email) {
-      return HttpRequest.badRequest('email')
-    }
-    if (!password) {
-      return HttpRequest.badRequest('password')
-    }
-    if (!confirmPassword) {
-      return HttpRequest.badRequest('confirmPassword')
-    }
-  }
-}
-
-class HttpRequest {
-  static badRequest (paramName) {
-    return {
-      statusCode: 400,
-      body: new MissingParamError(paramName)
-    }
-  }
-
-  static internalServerError () {
-    return {
-      statusCode: 500
-    }
-  }
-}
-
-class MissingParamError extends Error {
-  constructor (paramName) {
-    super(`Missing param: ${paramName}`)
-    this.name = 'MissingParamError'
-  }
-}
+const RegisterRouter = require('./register-router')
+const MissingParamError = require('../helpers/missing-param-error')
 
 describe('register router', () => {
   test('should return 400 if username is not provided', async () => {
