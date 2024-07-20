@@ -69,4 +69,18 @@ describe('register router', () => {
     const httpResponse = await sut.exec({})
     expect(httpResponse.statusCode).toBe(500)
   })
+
+  test('should return 400 if password is not equal to confirmPassword', async () => {
+    const sut = new RegisterRouter()
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        confirmPassword: 'another_password'
+      }
+    }
+    const httpResponse = await sut.exec(httpRequest)
+    expect(httpResponse.statusCode).toBe(400)
+  })
 })

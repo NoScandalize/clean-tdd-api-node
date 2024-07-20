@@ -18,5 +18,8 @@ module.exports = class RegisterRouter {
     if (!confirmPassword) {
       return HttpResponse.badRequest('confirmPassword')
     }
+    if (password !== confirmPassword) {
+      return HttpResponse.badRequest()
+    }
   }
 }
