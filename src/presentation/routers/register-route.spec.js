@@ -116,4 +116,18 @@ describe('register router', () => {
     expect(authUseCaseSpy.password).toBe(httpRequest.body.password)
     expect(authUseCaseSpy.confirmPassword).toBe(httpRequest.body.confirmPassword)
   })
+
+  test('should return 401 when invalid credentials are provided', async () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        username: 'invalid_username',
+        email: 'invalid_email@mail.com',
+        password: 'invalid_password',
+        confirmPassword: 'invalid_password'
+      }
+    }
+    const httpResponse = await sut.exec(httpRequest)
+    expect(httpResponse.statusCode).toBe(401)
+  })
 })

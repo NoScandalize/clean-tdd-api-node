@@ -26,5 +26,8 @@ module.exports = class RegisterRouter {
       return HttpResponse.badRequest('Password does not match password confirmation.')
     }
     this.authUseCase.auth(username, email, password, confirmPassword)
+    return {
+      statusCode: 401
+    }
   }
 }
