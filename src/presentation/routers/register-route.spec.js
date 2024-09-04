@@ -1,9 +1,12 @@
 const RegisterRouter = require('./register-router')
 const MissingParamError = require('../helpers/missing-param-error')
 
+const makeSut = () => {
+  return new RegisterRouter()
+}
 describe('register router', () => {
   test('should return 400 if username is not provided', async () => {
-    const sut = new RegisterRouter()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         email: 'any_email@mail.com',
@@ -17,7 +20,7 @@ describe('register router', () => {
   })
 
   test('should return 400 if email is not provided', async () => {
-    const sut = new RegisterRouter()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         username: 'any_username',
@@ -31,7 +34,7 @@ describe('register router', () => {
   })
 
   test('should return 400 if password is not provided', async () => {
-    const sut = new RegisterRouter()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         username: 'any_username',
@@ -45,7 +48,7 @@ describe('register router', () => {
   })
 
   test('should return 400 if confirmPassword is not provided', async () => {
-    const sut = new RegisterRouter()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         username: 'any_username',
@@ -59,19 +62,19 @@ describe('register router', () => {
   })
 
   test('should return 500 if no httpRequest is provided', async () => {
-    const sut = new RegisterRouter()
+    const sut = makeSut()
     const httpResponse = await sut.exec()
     expect(httpResponse.statusCode).toBe(500)
   })
 
   test('should return 500 if httpRequest has no body', async () => {
-    const sut = new RegisterRouter()
+    const sut = makeSut()
     const httpResponse = await sut.exec({})
     expect(httpResponse.statusCode).toBe(500)
   })
 
   test('should return 400 if password is not equal to confirmPassword', async () => {
-    const sut = new RegisterRouter()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         username: 'any_username',
