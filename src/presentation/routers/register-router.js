@@ -19,7 +19,7 @@ module.exports = class RegisterRouter {
       return HttpResponse.badRequest('confirmPassword')
     }
     if (password !== confirmPassword) {
-      return HttpResponse.badRequest()
+      return HttpResponse.badRequest('Password does not match password confirmation.')
     }
   }
 }

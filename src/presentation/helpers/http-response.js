@@ -1,10 +1,12 @@
 const MissingParamError = require('./missing-param-error')
+const PasswordMismatchError = require('./password-mismatch-error')
 
 module.exports = class HttpResponse {
   static badRequest (paramName) {
-    if (!paramName) {
+    if (paramName.split(' ').length > 1) {
       return {
-        statusCode: 400
+        statusCode: 400,
+        body: new PasswordMismatchError(paramName)
       }
     }
     return {
