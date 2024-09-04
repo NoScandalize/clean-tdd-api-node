@@ -1,6 +1,10 @@
 const HttpResponse = require('../helpers/http-response')
 
 module.exports = class RegisterRouter {
+  constructor (authUseCase) {
+    this.authUseCase = authUseCase
+  }
+
   async exec (httpRequest) {
     if (!httpRequest || !httpRequest.body) {
       return HttpResponse.internalServerError()
@@ -21,5 +25,6 @@ module.exports = class RegisterRouter {
     if (password !== confirmPassword) {
       return HttpResponse.badRequest('Password does not match password confirmation.')
     }
+    this.authUseCase.auth(username, email, password, confirmPassword)
   }
 }
