@@ -137,7 +137,7 @@ describe('register router', () => {
   })
 
   test('should return 200 when valid credentials are provided', async () => {
-    const { sut } = makeSut()
+    const { sut, authUseCaseSpy } = makeSut()
     const httpRequest = {
       body: {
         username: 'valid_username',
@@ -148,6 +148,7 @@ describe('register router', () => {
     }
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body.accessToken).toEqual(authUseCaseSpy.accessToken)
   })
 
   test('should return 500 if no authUseCase is provided', async () => {
