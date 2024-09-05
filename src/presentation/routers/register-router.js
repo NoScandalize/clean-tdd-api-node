@@ -23,7 +23,7 @@ module.exports = class RegisterRouter {
       if (password !== confirmPassword) {
         return HttpResponse.badRequest('Password does not match password confirmation.')
       }
-      const accessToken = this.authUseCase.auth(username, email, password, confirmPassword)
+      const accessToken = await this.authUseCase.auth(username, email, password, confirmPassword)
       if (!accessToken) {
         return HttpResponse.unauthorizedError()
       }

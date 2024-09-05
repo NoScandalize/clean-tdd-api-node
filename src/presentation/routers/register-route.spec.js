@@ -15,7 +15,7 @@ const makeSut = () => {
 
 const makeAuthUseCase = () => {
   class AuthUseCaseSpy {
-    auth (username, email, password, confirmPassword) {
+    async auth (username, email, password, confirmPassword) {
       this.username = username
       this.email = email
       this.password = password
@@ -28,7 +28,7 @@ const makeAuthUseCase = () => {
 
 const makeAuthUseCaseWithError = () => {
   class AuthUseCaseSpy {
-    auth () {
+    async auth () {
       throw new Error()
     }
   }
