@@ -1,8 +1,19 @@
 const RegisterRouter = require('./register-router')
 const MissingParamError = require('../helpers/missing-param-error')
 const UnauthorizedError = require('../helpers/unauthorized-error')
+const ServerError = require('../helpers/server-error')
 
 const makeSut = () => {
+  const authUseCaseSpy = makeAuthUseCase()
+  authUseCaseSpy.accessToken = 'valid_token'
+  const sut = new RegisterRouter(authUseCaseSpy)
+  return {
+    sut,
+    authUseCaseSpy
+  }
+}
+
+const makeAuthUseCase = () => {
   class AuthUseCaseSpy {
     auth (username, email, password, confirmPassword) {
       this.username = username
@@ -12,13 +23,16 @@ const makeSut = () => {
       return this.accessToken
     }
   }
-  const authUseCaseSpy = new AuthUseCaseSpy()
-  authUseCaseSpy.accessToken = 'valid_token'
-  const sut = new RegisterRouter(authUseCaseSpy)
-  return {
-    sut,
-    authUseCaseSpy
+  return new AuthUseCaseSpy()
+}
+
+const makeAuthUseCaseWithError = () => {
+  class AuthUseCaseSpy {
+    auth () {
+      throw new Error()
+    }
   }
+  return new AuthUseCaseSpy()
 }
 describe('register router', () => {
   test('should return 400 if username is not provided', async () => {
@@ -81,12 +95,14 @@ describe('register router', () => {
     const { sut } = makeSut()
     const httpResponse = await sut.exec()
     expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 
   test('should return 500 if httpRequest has no body', async () => {
     const { sut } = makeSut()
     const httpResponse = await sut.exec({})
     expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 
   test('should return 400 if password is not equal to confirmPassword', async () => {
@@ -163,10 +179,27 @@ describe('register router', () => {
     }
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
   })
 
   test('should return 500 if authUseCase has no auth method', async () => {
     const sut = new RegisterRouter({})
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        confirmPassword: 'any_password'
+      }
+    }
+    const httpResponse = await sut.exec(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('should return 500 if authUseCase throws', async () => {
+    const authUseCaseSpy = makeAuthUseCaseWithError()
+    const sut = new RegisterRouter(authUseCaseSpy)
     const httpRequest = {
       body: {
         username: 'any_username',
