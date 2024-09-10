@@ -20,7 +20,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "pre-push" : "npm run test:ci"
+      "pre-push": "npm run test:ci"
     }
   },
   "standard": {
@@ -36,5 +36,8 @@
     "jest": "^29.7.0",
     "lint-staged": "^15.2.7",
     "standard": "^17.1.0"
+  },
+  "dependencies": {
+    "validator": "^13.12.0"
   }
 }
