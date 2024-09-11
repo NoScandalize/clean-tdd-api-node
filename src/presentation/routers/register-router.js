@@ -1,5 +1,5 @@
 const HttpResponse = require('../helpers/http-response')
-const { MissingParamError, PasswordMismatchError, InvalidParamError } = require('../errors')
+const { MissingParamError, PasswordMismatchError, InvalidParamError } = require('../../utils/errors')
 
 module.exports = class RegisterRouter {
   constructor (authUseCase, emailValidator) {
