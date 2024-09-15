@@ -5,9 +5,11 @@ const makeSut = () => {
   class EncrypterSpy {
     async encrypt (password) {
       this.password = password
+      return this.hashedPassword
     }
   }
   const encrypterSpy = new EncrypterSpy()
+  encrypterSpy.hashedPassword = 'any_hashedPassword'
   class LoadUserByEmailRepositorySpy {
     async load (email) {
       this.email = email
@@ -66,5 +68,12 @@ describe('auth usecase', () => {
     const { sut, encrypterSpy } = makeSut()
     await sut.auth('valid_email@mail.com', 'any_password')
     expect(encrypterSpy.password).toBe('any_password')
+  })
+
+  test('should return null if Encrypter returns null', async () => {
+    const { sut, encrypterSpy } = makeSut()
+    encrypterSpy.hashedPassword = null
+    const accessToken = await sut.auth('valid_email@mail.com', 'any_password')
+    expect(accessToken).toBeNull()
   })
 })

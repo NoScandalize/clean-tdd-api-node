@@ -17,6 +17,9 @@ module.exports = class AuthUseCase {
     if (user) {
       return null
     }
-    await this.encrypter.encrypt(password)
+    const hashedPassword = await this.encrypter.encrypt(password)
+    if (!hashedPassword) {
+      return null
+    }
   }
 }
