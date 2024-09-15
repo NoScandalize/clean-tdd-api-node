@@ -27,11 +27,9 @@ const makeEmailValidator = () => {
 
 const makeAuthUseCase = () => {
   class AuthUseCaseSpy {
-    async auth (username, email, password, confirmPassword) {
-      this.username = username
+    async auth (email, password) {
       this.email = email
       this.password = password
-      this.confirmPassword = confirmPassword
       return this.accessToken
     }
   }
@@ -154,10 +152,8 @@ describe('register router', () => {
       }
     }
     await sut.exec(httpRequest)
-    expect(authUseCaseSpy.username).toBe(httpRequest.body.username)
     expect(authUseCaseSpy.email).toBe(httpRequest.body.email)
     expect(authUseCaseSpy.password).toBe(httpRequest.body.password)
-    expect(authUseCaseSpy.confirmPassword).toBe(httpRequest.body.confirmPassword)
   })
 
   test('should return 401 when invalid credentials are provided', async () => {
