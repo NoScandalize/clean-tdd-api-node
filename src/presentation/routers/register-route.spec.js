@@ -12,14 +12,17 @@ const makeSut = () => {
     sut,
     authUseCaseSpy,
     emailValidatorSpy,
-    loadUserByEmailRepositorySpy
+    loadUserByEmailRepositorySpy,
+    createUserRepositorySpy
   }
 }
 
 const makeCreateUserRepository = () => {
   class CreateUserRepositorySpy {
-    async create () {
-
+    async create (username, email, password) {
+      this.username = username
+      this.email = email
+      this.password = password
     }
   }
   return new CreateUserRepositorySpy()
@@ -483,5 +486,21 @@ describe('register router', () => {
     }
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
+  })
+
+  test('should call CreateUserRepository with correct params', async () => {
+    const { sut, createUserRepositorySpy } = makeSut()
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        confirmPassword: 'any_password'
+      }
+    }
+    await sut.exec(httpRequest)
+    expect(createUserRepositorySpy.username).toBe(httpRequest.body.username)
+    expect(createUserRepositorySpy.email).toBe(httpRequest.body.email)
+    expect(createUserRepositorySpy.password).toBe(httpRequest.body.password)
   })
 })
