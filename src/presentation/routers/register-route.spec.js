@@ -1,5 +1,5 @@
 const RegisterRouter = require('./register-router')
-const { MissingParamError, InvalidParamError } = require('../../utils/errors')
+const { MissingParamError, InvalidParamError, AlreadyExistsError } = require('../../utils/errors')
 const { UnauthorizedError, ServerError } = require('../errors')
 
 const makeSut = () => {
@@ -170,6 +170,7 @@ describe('register router', () => {
     }
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new AlreadyExistsError('email'))
   })
 
   test('should return 500 if no httpRequest is provided', async () => {

@@ -1,5 +1,5 @@
 const HttpResponse = require('../helpers/http-response')
-const { MissingParamError, PasswordMismatchError, InvalidParamError } = require('../../utils/errors')
+const { MissingParamError, PasswordMismatchError, InvalidParamError, AlreadyExistsError } = require('../../utils/errors')
 
 module.exports = class RegisterRouter {
   constructor (authUseCase, emailValidator, loadUserByEmailRepository, createUserRepository) {
@@ -31,7 +31,7 @@ module.exports = class RegisterRouter {
         return HttpResponse.badRequest(new PasswordMismatchError('Password does not match password confirmation.'))
       }
       if (await this.loadUserByEmailRepository.load(email)) {
-        return HttpResponse.badRequest(new InvalidParamError('email'))
+        return HttpResponse.badRequest(new AlreadyExistsError('email'))
       }
       await this.createUserRepository.create(username, email, password)
       const accessToken = await this.authUseCase.auth(email, password)
