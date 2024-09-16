@@ -5,12 +5,25 @@ const { UnauthorizedError, ServerError } = require('../errors')
 const makeSut = () => {
   const authUseCaseSpy = makeAuthUseCase()
   const emailValidatorSpy = makeEmailValidator()
-  const sut = new RegisterRouter(authUseCaseSpy, emailValidatorSpy)
+  const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
+  const sut = new RegisterRouter(authUseCaseSpy, emailValidatorSpy, loadUserByEmailRepositorySpy)
   return {
     sut,
     authUseCaseSpy,
-    emailValidatorSpy
+    emailValidatorSpy,
+    loadUserByEmailRepositorySpy
   }
+}
+
+const makeLoadUserByEmailRepository = () => {
+  class LoadUserByEmailRepositorySpy {
+    async load (email) {
+      this.email = email
+      return this.user
+    }
+  }
+  const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositorySpy()
+  return loadUserByEmailRepositorySpy
 }
 
 const makeEmailValidator = () => {
@@ -111,6 +124,21 @@ describe('register router', () => {
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual(new MissingParamError('confirmPassword'))
+  })
+
+  test('should return 400 if LoadUserByEmailRepository returns an already user', async () => {
+    const { sut, loadUserByEmailRepositorySpy } = makeSut()
+    loadUserByEmailRepositorySpy.user = {}
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'registered_email@mail.com',
+        password: 'any_password',
+        confirmPassword: 'any_password'
+      }
+    }
+    const httpResponse = await sut.exec(httpRequest)
+    expect(httpResponse.statusCode).toBe(400)
   })
 
   test('should return 500 if no httpRequest is provided', async () => {

@@ -67,17 +67,10 @@ describe('auth usecase', () => {
     expect(promise).rejects.toThrow()
   })
 
-  test('should return null if LoadUserByEmailRepository returns an already user', async () => {
-    const { sut, loadUserByEmailRepositorySpy } = makeSut()
-    loadUserByEmailRepositorySpy.user = {}
+  test('should return null if LoadUserByEmailRepository returns null', async () => {
+    const { sut } = makeSut()
     const accessToken = await sut.auth('any_email@mail.com', 'any_password')
     expect(accessToken).toBeNull()
-  })
-
-  test('should call Encrypter with correct password', async () => {
-    const { sut, encrypterSpy } = makeSut()
-    await sut.auth('valid_email@mail.com', 'any_password')
-    expect(encrypterSpy.password).toBe('any_password')
   })
 
   test('should return null if Encrypter returns null', async () => {
