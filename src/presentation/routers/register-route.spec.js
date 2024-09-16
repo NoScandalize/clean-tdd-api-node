@@ -337,4 +337,21 @@ describe('register router', () => {
     await sut.exec(httpRequest)
     expect(emailValidatorSpy.email).toBe(httpRequest.body.email)
   })
+
+  test('should return 500 if no LoadUserEmailByRepository is provided', async () => {
+    const authUserCaseSpy = makeAuthUseCase()
+    const emailValidatorSpy = makeEmailValidator()
+    const sut = new RegisterRouter(authUserCaseSpy, emailValidatorSpy)
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        confirmPassword: 'any_password'
+      }
+    }
+    const httpResponse = await sut.exec(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
+  })
 })
