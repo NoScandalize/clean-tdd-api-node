@@ -397,4 +397,18 @@ describe('register router', () => {
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
   })
+
+  test('should call LoadUserByEmailRepository with correct email', async () => {
+    const { sut, loadUserByEmailRepositorySpy } = makeSut()
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        confirmPassword: 'any_password'
+      }
+    }
+    await sut.exec(httpRequest)
+    expect(loadUserByEmailRepositorySpy.email).toBe(httpRequest.body.email)
+  })
 })
