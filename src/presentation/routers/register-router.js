@@ -2,10 +2,11 @@ const HttpResponse = require('../helpers/http-response')
 const { MissingParamError, PasswordMismatchError, InvalidParamError } = require('../../utils/errors')
 
 module.exports = class RegisterRouter {
-  constructor (authUseCase, emailValidator, loadUserByEmailRepository) {
+  constructor (authUseCase, emailValidator, loadUserByEmailRepository, createUserRepository) {
     this.authUseCase = authUseCase
     this.emailValidator = emailValidator
     this.loadUserByEmailRepository = loadUserByEmailRepository
+    this.createUserRepository = createUserRepository
   }
 
   async exec (httpRequest) {
@@ -32,6 +33,7 @@ module.exports = class RegisterRouter {
       if (await this.loadUserByEmailRepository.load(email)) {
         return HttpResponse.badRequest(new InvalidParamError('email'))
       }
+      await this.createUserRepository.create(username, email, password)
       const accessToken = await this.authUseCase.auth(email, password)
       if (!accessToken) {
         return HttpResponse.unauthorizedError()
