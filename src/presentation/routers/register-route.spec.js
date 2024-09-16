@@ -88,6 +88,15 @@ const makeLoadUserByEmailRepositoryWithError = () => {
   return new LoadUserByEmailRepositorySpy()
 }
 
+const makeCreateUserRepositoryWithError = () => {
+  class CreateUserRepositorySpy {
+    create () {
+      throw new Error()
+    }
+  }
+  return new CreateUserRepositorySpy()
+}
+
 describe('register router', () => {
   test('should return 400 if username is not provided', async () => {
     const { sut } = makeSut()
@@ -456,5 +465,23 @@ describe('register router', () => {
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('should return 500 if CreateUserRepository throws', async () => {
+    const authUseCaseSpy = makeAuthUseCase()
+    const emailValidatorSpy = makeAuthUseCase()
+    const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepositoryWithError()
+    const createUserRepositorySpy = makeCreateUserRepositoryWithError()
+    const sut = new RegisterRouter(authUseCaseSpy, emailValidatorSpy, loadUserByEmailRepositorySpy, createUserRepositorySpy)
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        confirmPassword: 'any_password'
+      }
+    }
+    const httpResponse = await sut.exec(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
   })
 })
