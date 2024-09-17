@@ -111,6 +111,15 @@ const makeCreateUserRepositoryWithError = () => {
   return new CreateUserRepositorySpy()
 }
 
+const makeEncrypterWithError = () => {
+  class EncrypterSpy {
+    encrypt () {
+      throw new Error()
+    }
+  }
+  return new EncrypterSpy()
+}
+
 describe('register router', () => {
   test('should return 400 if username is not provided', async () => {
     const { sut } = makeSut()
@@ -552,6 +561,25 @@ describe('register router', () => {
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('should return 500 if Encrypter throws', async () => {
+    const authUseCaseSpy = makeAuthUseCase()
+    const emailValidatorSpy = makeAuthUseCase()
+    const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepositoryWithError()
+    const createUserRepositorySpy = makeCreateUserRepository()
+    const encrypterSpy = makeEncrypterWithError()
+    const sut = new RegisterRouter(authUseCaseSpy, emailValidatorSpy, loadUserByEmailRepositorySpy, createUserRepositorySpy, encrypterSpy)
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        confirmPassword: 'any_password'
+      }
+    }
+    const httpResponse = await sut.exec(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
   })
 
   test('should call Encrypter with correct password', async () => {
