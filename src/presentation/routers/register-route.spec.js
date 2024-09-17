@@ -14,13 +14,15 @@ const makeSut = () => {
     authUseCaseSpy,
     emailValidatorSpy,
     loadUserByEmailRepositorySpy,
-    createUserRepositorySpy
+    createUserRepositorySpy,
+    encrypterSpy
   }
 }
 
 const makeEncrypter = () => {
   class EncrypterSpy {
     async encrypt (password) {
+      this.password = password
     }
   }
   return new EncrypterSpy()
@@ -550,5 +552,19 @@ describe('register router', () => {
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('should call Encrypter with correct password', async () => {
+    const { sut, encrypterSpy } = makeSut()
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        confirmPassword: 'any_password'
+      }
+    }
+    await sut.exec(httpRequest)
+    expect(encrypterSpy.password).toBe(httpRequest.body.password)
   })
 })
