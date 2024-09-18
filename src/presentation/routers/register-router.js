@@ -34,7 +34,10 @@ module.exports = class RegisterRouter {
       if (await this.loadUserByEmailRepository.load(email)) {
         return HttpResponse.badRequest(new AlreadyExistsError('email'))
       }
-      await this.encrypter.encrypt(password)
+      const hashedPassword = await this.encrypter.encrypt(password)
+      if (!hashedPassword) {
+        return HttpResponse.internalServerError()
+      }
       await this.createUserRepository.create(username, email, password)
       const accessToken = await this.authUseCase.auth(email, password)
       if (!accessToken) {

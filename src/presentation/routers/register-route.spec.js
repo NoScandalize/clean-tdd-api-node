@@ -23,9 +23,12 @@ const makeEncrypter = () => {
   class EncrypterSpy {
     async encrypt (password) {
       this.password = password
+      return this.hashedPassword
     }
   }
-  return new EncrypterSpy()
+  const encrypterSpy = new EncrypterSpy()
+  encrypterSpy.hashedPassword = 'any_hashedPassword'
+  return encrypterSpy
 }
 
 const makeCreateUserRepository = () => {
@@ -594,5 +597,20 @@ describe('register router', () => {
     }
     await sut.exec(httpRequest)
     expect(encrypterSpy.password).toBe(httpRequest.body.password)
+  })
+
+  test('should return 500 if Encrypter return null', async () => {
+    const { sut, encrypterSpy } = makeSut()
+    encrypterSpy.hashedPassword = null
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        confirmPassword: 'any_password'
+      }
+    }
+    const httpResponse = await sut.exec(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
   })
 })
