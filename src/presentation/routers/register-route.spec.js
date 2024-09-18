@@ -33,10 +33,10 @@ const makeEncrypter = () => {
 
 const makeCreateUserRepository = () => {
   class CreateUserRepositorySpy {
-    async create (username, email, password) {
+    async create (username, email, hashedPassword) {
       this.username = username
       this.email = email
-      this.password = password
+      this.hashedPassword = hashedPassword
     }
   }
   return new CreateUserRepositorySpy()
@@ -513,7 +513,7 @@ describe('register router', () => {
   })
 
   test('should call CreateUserRepository with correct params', async () => {
-    const { sut, createUserRepositorySpy } = makeSut()
+    const { sut, createUserRepositorySpy, encrypterSpy } = makeSut()
     const httpRequest = {
       body: {
         username: 'any_username',
@@ -525,7 +525,7 @@ describe('register router', () => {
     await sut.exec(httpRequest)
     expect(createUserRepositorySpy.username).toBe(httpRequest.body.username)
     expect(createUserRepositorySpy.email).toBe(httpRequest.body.email)
-    expect(createUserRepositorySpy.password).toBe(httpRequest.body.password)
+    expect(createUserRepositorySpy.hashedPassword).toBe(encrypterSpy.hashedPassword)
   })
 
   test('should return 500 if no Encrypter is provided', async () => {

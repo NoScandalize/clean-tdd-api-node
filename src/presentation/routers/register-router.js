@@ -38,7 +38,7 @@ module.exports = class RegisterRouter {
       if (!hashedPassword) {
         return HttpResponse.internalServerError()
       }
-      await this.createUserRepository.create(username, email, password)
+      await this.createUserRepository.create(username, email, hashedPassword)
       const accessToken = await this.authUseCase.auth(email, password)
       if (!accessToken) {
         return HttpResponse.unauthorizedError()
