@@ -54,4 +54,10 @@ describe('createUser repository', () => {
     expect(sut.create('any_username')).rejects.toThrow(new MissingParamError('email'))
     expect(sut.create('any_username', 'valid_email')).rejects.toThrow(new MissingParamError('hashedPassword'))
   })
+
+  test('should return a user if the user is created', async () => {
+    const { sut } = makeSut()
+    const user = await sut.create('any_username', 'valid_email@mail.com', 'any_hashedPassord')
+    expect(user.insertedId).toBeTruthy()
+  })
 })
