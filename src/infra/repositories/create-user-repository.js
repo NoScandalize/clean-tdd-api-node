@@ -1,10 +1,7 @@
 const MissingParamError = require('../../utils/errors/missing-param-error')
+const MongoHelper = require('../helpers/mongo-helper')
 
 module.exports = class CreateUseRepository {
-  constructor (userModel) {
-    this.userModel = userModel
-  }
-
   async create (username, email, hashedPassword) {
     if (!username) {
       throw new MissingParamError('username')
@@ -15,7 +12,8 @@ module.exports = class CreateUseRepository {
     if (!hashedPassword) {
       throw new MissingParamError('hashedPassword')
     }
-    const user = await this.userModel.insertOne({ username, email, password: hashedPassword })
+    const db = await MongoHelper.db
+    const user = await db.collection('users').insertOne({ username, email, password: hashedPassword })
     return user
   }
 }
