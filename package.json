@@ -2,8 +2,9 @@
   "name": "clean-tdd-api-node",
   "version": "1.0.0",
   "description": "An API project built using the concepts of tdd and clean architecture",
-  "main": "index.js",
+  "main": "src/main/index.js",
   "scripts": {
+    "start": "node src/main/index.js",
     "test": "jest --colors --noStackTrace --passWithNoTests",
     "test:unit": "npm test -- --watch -c jest-unit-config.js",
     "test:integration": "npm test -- --watch -c jest-integration-config.js",
@@ -40,6 +41,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "express": "^4.21.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.9.0",
     "validator": "^13.12.0"
