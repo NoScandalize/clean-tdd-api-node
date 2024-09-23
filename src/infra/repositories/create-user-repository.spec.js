@@ -2,7 +2,7 @@ const MissingParamError = require('../../utils/errors/missing-param-error')
 const MongoHelper = require('../../infra/helpers/mongo-helper')
 const CreateUseRepository = require('./create-user-repository')
 
-let db
+let userModel
 
 const makeSut = () => {
   return new CreateUseRepository()
@@ -11,11 +11,11 @@ const makeSut = () => {
 describe('createUser repository', () => {
   beforeAll(async () => {
     await MongoHelper.connect(process.env.MONGO_URL)
-    db = await MongoHelper.db
+    userModel = await MongoHelper.getCollection('users')
   })
 
   beforeEach(async () => {
-    await db.collection('users').deleteMany()
+    await userModel.deleteMany()
   })
 
   afterAll(async () => {

@@ -12,8 +12,8 @@ module.exports = class CreateUseRepository {
     if (!hashedPassword) {
       throw new MissingParamError('hashedPassword')
     }
-    const db = await MongoHelper.db
-    const user = await db.collection('users').insertOne({ username, email, password: hashedPassword })
+    const userModel = await MongoHelper.getCollection('users')
+    const user = await userModel.insertOne({ username, email, password: hashedPassword })
     return user
   }
 }
