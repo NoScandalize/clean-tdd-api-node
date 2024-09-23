@@ -2,7 +2,7 @@ const HttpResponse = require('../helpers/http-response')
 const { MissingParamError, PasswordMismatchError, InvalidParamError, AlreadyExistsError } = require('../../utils/errors')
 
 module.exports = class RegisterRouter {
-  constructor (authUseCase, emailValidator, loadUserByEmailRepository, createUserRepository, encrypter) {
+  constructor ({ authUseCase, emailValidator, loadUserByEmailRepository, createUserRepository, encrypter } = {}) {
     this.authUseCase = authUseCase
     this.emailValidator = emailValidator
     this.loadUserByEmailRepository = loadUserByEmailRepository

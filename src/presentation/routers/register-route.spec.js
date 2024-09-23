@@ -8,7 +8,13 @@ const makeSut = () => {
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
   const createUserRepositorySpy = makeCreateUserRepository()
   const encrypterSpy = makeEncrypter()
-  const sut = new RegisterRouter(authUseCaseSpy, emailValidatorSpy, loadUserByEmailRepositorySpy, createUserRepositorySpy, encrypterSpy)
+  const sut = new RegisterRouter({
+    authUseCase: authUseCaseSpy,
+    emailValidator: emailValidatorSpy,
+    loadUserByEmailRepository: loadUserByEmailRepositorySpy,
+    createUserRepository: createUserRepositorySpy,
+    encrypter: encrypterSpy
+  })
   return {
     sut,
     authUseCaseSpy,
@@ -270,51 +276,6 @@ describe('register router', () => {
     expect(httpResponse.body.accessToken).toEqual(authUseCaseSpy.accessToken)
   })
 
-  test('should return 500 if no authUseCase is provided', async () => {
-    const sut = new RegisterRouter()
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
-  })
-
-  test('should return 500 if authUseCase has no auth method', async () => {
-    const sut = new RegisterRouter({})
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
-  })
-
-  test('should return 500 if authUseCase throws', async () => {
-    const authUseCaseSpy = makeAuthUseCaseWithError()
-    const sut = new RegisterRouter(authUseCaseSpy)
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-  })
-
   test('should return 400 if an invalid email is provided', async () => {
     const { sut, emailValidatorSpy } = makeSut()
     emailValidatorSpy.isEmailValid = false
@@ -331,54 +292,6 @@ describe('register router', () => {
     expect(httpResponse.body).toEqual(new InvalidParamError('email'))
   })
 
-  test('should return 500 if no EmailValidator is provided', async () => {
-    const authUseCaseSpy = makeAuthUseCase()
-    const sut = new RegisterRouter(authUseCaseSpy)
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
-  })
-
-  test('should return 500 if no EmailValidator has no isValid method', async () => {
-    const authUseCaseSpy = makeAuthUseCase()
-    const sut = new RegisterRouter(authUseCaseSpy, {})
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
-  })
-
-  test('should return 500 if EmailValidator throws', async () => {
-    const authUseCaseSpy = makeAuthUseCase()
-    const emailValidatorSpy = makeEmailValidatorWithError()
-    const sut = new RegisterRouter(authUseCaseSpy, emailValidatorSpy)
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-  })
-
   test('should call EmailValidator with correct email', async () => {
     const { sut, emailValidatorSpy } = makeSut()
     const httpRequest = {
@@ -391,57 +304,6 @@ describe('register router', () => {
     }
     await sut.exec(httpRequest)
     expect(emailValidatorSpy.email).toBe(httpRequest.body.email)
-  })
-
-  test('should return 500 if no LoadUserEmailByRepository is provided', async () => {
-    const authUserCaseSpy = makeAuthUseCase()
-    const emailValidatorSpy = makeEmailValidator()
-    const sut = new RegisterRouter(authUserCaseSpy, emailValidatorSpy)
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
-  })
-
-  test('should return 500 if no LoadUserByEmailRepository has no load method', async () => {
-    const authUseCaseSpy = makeAuthUseCase()
-    const emailValidatorSpy = makeEmailValidator()
-    const sut = new RegisterRouter(authUseCaseSpy, emailValidatorSpy, {})
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
-  })
-
-  test('should return 500 if LoadUserByEmailRepository throws', async () => {
-    const authUseCaseSpy = makeAuthUseCase()
-    const emailValidatorSpy = makeAuthUseCase()
-    const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepositoryWithError()
-    const sut = new RegisterRouter(authUseCaseSpy, emailValidatorSpy, loadUserByEmailRepositorySpy)
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
   })
 
   test('should call LoadUserByEmailRepository with correct email', async () => {
@@ -458,60 +320,6 @@ describe('register router', () => {
     expect(loadUserByEmailRepositorySpy.email).toBe(httpRequest.body.email)
   })
 
-  test('should return 500 if no CreateUserRepository is provided', async () => {
-    const authUserCaseSpy = makeAuthUseCase()
-    const emailValidatorSpy = makeEmailValidator()
-    const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
-    const sut = new RegisterRouter(authUserCaseSpy, emailValidatorSpy, loadUserByEmailRepositorySpy)
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
-  })
-
-  test('should return 500 if no CreateUserRepository has no create method', async () => {
-    const authUseCaseSpy = makeAuthUseCase()
-    const emailValidatorSpy = makeEmailValidator()
-    const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
-    const sut = new RegisterRouter(authUseCaseSpy, emailValidatorSpy, loadUserByEmailRepositorySpy, {})
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
-  })
-
-  test('should return 500 if CreateUserRepository throws', async () => {
-    const authUseCaseSpy = makeAuthUseCase()
-    const emailValidatorSpy = makeAuthUseCase()
-    const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepositoryWithError()
-    const createUserRepositorySpy = makeCreateUserRepositoryWithError()
-    const sut = new RegisterRouter(authUseCaseSpy, emailValidatorSpy, loadUserByEmailRepositorySpy, createUserRepositorySpy)
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-  })
-
   test('should call CreateUserRepository with correct params', async () => {
     const { sut, createUserRepositorySpy, encrypterSpy } = makeSut()
     const httpRequest = {
@@ -526,63 +334,6 @@ describe('register router', () => {
     expect(createUserRepositorySpy.username).toBe(httpRequest.body.username)
     expect(createUserRepositorySpy.email).toBe(httpRequest.body.email)
     expect(createUserRepositorySpy.hashedPassword).toBe(encrypterSpy.hashedPassword)
-  })
-
-  test('should return 500 if no Encrypter is provided', async () => {
-    const authUserCaseSpy = makeAuthUseCase()
-    const emailValidatorSpy = makeEmailValidator()
-    const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
-    const createUserRepositorySpy = makeCreateUserRepository()
-    const sut = new RegisterRouter(authUserCaseSpy, emailValidatorSpy, loadUserByEmailRepositorySpy, createUserRepositorySpy)
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
-  })
-
-  test('should return 500 if no Encrypter has no encrypt method', async () => {
-    const authUseCaseSpy = makeAuthUseCase()
-    const emailValidatorSpy = makeEmailValidator()
-    const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
-    const createUserRepositorySpy = makeCreateUserRepository()
-    const sut = new RegisterRouter(authUseCaseSpy, emailValidatorSpy, loadUserByEmailRepositorySpy, createUserRepositorySpy, {})
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
-  })
-
-  test('should return 500 if Encrypter throws', async () => {
-    const authUseCaseSpy = makeAuthUseCase()
-    const emailValidatorSpy = makeAuthUseCase()
-    const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepositoryWithError()
-    const createUserRepositorySpy = makeCreateUserRepository()
-    const encrypterSpy = makeEncrypterWithError()
-    const sut = new RegisterRouter(authUseCaseSpy, emailValidatorSpy, loadUserByEmailRepositorySpy, createUserRepositorySpy, encrypterSpy)
-    const httpRequest = {
-      body: {
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        confirmPassword: 'any_password'
-      }
-    }
-    const httpResponse = await sut.exec(httpRequest)
-    expect(httpResponse.statusCode).toBe(500)
   })
 
   test('should call Encrypter with correct password', async () => {
@@ -612,5 +363,121 @@ describe('register router', () => {
     }
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
+  })
+
+  test('should throw if invalid dependencies is provided', async () => {
+    const invalid = {}
+    const authUseCase = makeAuthUseCase()
+    const emailValidator = makeEmailValidator()
+    const loadUserByEmailRepository = makeLoadUserByEmailRepository()
+    const createUserRepository = makeCreateUserRepository()
+    const suts = [].concat(
+      new RegisterRouter(),
+      new RegisterRouter({}),
+      new RegisterRouter({
+        authUseCase: invalid
+      }),
+      new RegisterRouter({
+        authUseCase
+      }),
+      new RegisterRouter({
+        authUseCase,
+        emailValidator: invalid
+      }),
+      new RegisterRouter({
+        authUseCase,
+        emailValidator
+      }),
+      new RegisterRouter({
+        authUseCase,
+        emailValidator,
+        loadUserByEmailRepository: invalid
+      }),
+      new RegisterRouter({
+        authUseCase,
+        emailValidator,
+        loadUserByEmailRepository
+      }),
+      new RegisterRouter({
+        authUseCase,
+        emailValidator,
+        loadUserByEmailRepository,
+        createUserRepository: invalid
+      }),
+      new RegisterRouter({
+        authUseCase,
+        emailValidator,
+        loadUserByEmailRepository,
+        createUserRepository
+      }),
+      new RegisterRouter({
+        authUseCase,
+        emailValidator,
+        loadUserByEmailRepository,
+        createUserRepository,
+        encrypter: invalid
+      })
+    )
+    for (const sut of suts) {
+      const httpRequest = {
+        body: {
+          username: 'any_username',
+          email: 'any_email@mail.com',
+          password: 'any_password',
+          confirmPassword: 'any_password'
+        }
+      }
+      const httpResponse = await sut.exec(httpRequest)
+      expect(httpResponse.statusCode).toBe(500)
+      expect(httpResponse.body).toEqual(new ServerError())
+    }
+  })
+
+  test('should throw if any dependency throw', async () => {
+    const authUseCase = makeAuthUseCase()
+    const emailValidator = makeEmailValidator()
+    const loadUserByEmailRepository = makeLoadUserByEmailRepository()
+    const createUserRepository = makeCreateUserRepository()
+    const suts = [].concat(
+      new RegisterRouter({
+        authUseCase: makeAuthUseCaseWithError()
+      }),
+      new RegisterRouter({
+        authUseCase,
+        emailValidator: makeEmailValidatorWithError()
+      }),
+      new RegisterRouter({
+        authUseCase,
+        emailValidator,
+        loadUserByEmailRepository: makeLoadUserByEmailRepositoryWithError()
+      }),
+      new RegisterRouter({
+        authUseCase,
+        emailValidator,
+        loadUserByEmailRepository,
+        createUserRepository: makeCreateUserRepositoryWithError()
+      })
+      ,
+      new RegisterRouter({
+        authUseCase,
+        emailValidator,
+        loadUserByEmailRepository,
+        createUserRepository,
+        encrypter: makeEncrypterWithError()
+      })
+    )
+    for (const sut of suts) {
+      const httpRequest = {
+        body: {
+          username: 'any_username',
+          email: 'any_email@mail.com',
+          password: 'any_password',
+          confirmPassword: 'any_password'
+        }
+      }
+      const httpResponse = await sut.exec(httpRequest)
+      expect(httpResponse.statusCode).toBe(500)
+      expect(httpResponse.body).toEqual(new ServerError())
+    }
   })
 })
