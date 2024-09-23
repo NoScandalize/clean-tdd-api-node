@@ -6,7 +6,7 @@ describe('app setup', () => {
     app.get('/test_x_powered_by', (req, res) => {
       res.send('')
     })
-    const res = await request(app).get('/')
+    const res = await request(app).get('/test_x_powered_by')
     expect(res.headers['x-powered-by']).toBeUndefined()
   })
 })
