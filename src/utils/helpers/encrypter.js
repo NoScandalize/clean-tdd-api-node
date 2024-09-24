@@ -14,6 +14,12 @@ module.exports = class Encrypter {
   }
 
   async encrypt (value, saltRounded) {
+    if (!value) {
+      throw new MissingParamError('value')
+    }
+    if (!saltRounded) {
+      throw new MissingParamError('salt')
+    }
     const salt = await bcrypt.genSalt(saltRounded)
     const hash = await bcrypt.hash(value, salt)
     return hash

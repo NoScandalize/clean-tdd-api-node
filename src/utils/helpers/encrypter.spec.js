@@ -43,4 +43,10 @@ describe('encrypter', () => {
     expect(bcrypt.salt).toBe('any_salt')
     expect(hash).toBe('any_hash')
   })
+
+  test('should throw if no params are provided in encrypt method', async () => {
+    const sut = makeSut()
+    expect(sut.encrypt()).rejects.toThrow(new MissingParamError('value'))
+    expect(sut.encrypt('any_value')).rejects.toThrow(new MissingParamError('salt'))
+  })
 })
