@@ -7,27 +7,27 @@ const makeSut = () => {
 }
 
 describe('encrypter', () => {
-  test('should return true if bcrypt returns true', async () => {
+  test('should return true if bcrypt returns true in compare method', async () => {
     const sut = makeSut()
     const isValid = await sut.compare('any_value', 'hashed_value')
     expect(isValid).toBe(true)
   })
 
-  test('should return false if bcrypt returns false', async () => {
+  test('should return false if bcrypt returns false in compare method', async () => {
     const sut = makeSut()
     bcrypt.isValid = false
     const isValid = await sut.compare('any_value', 'hashed_value')
     expect(isValid).toBe(false)
   })
 
-  test('should call bcrypt with correct values', async () => {
+  test('should call bcrypt with correct values in compare method', async () => {
     const sut = makeSut()
     await sut.compare('any_value', 'hashed_value')
     expect(bcrypt.value).toBe('any_value')
     expect(bcrypt.hashValue).toBe('hashed_value')
   })
 
-  test('should throw if no params are provided', async () => {
+  test('should throw if no params are provided in compare method', async () => {
     const sut = makeSut()
     expect(sut.compare()).rejects.toThrow(new MissingParamError('value'))
     expect(sut.compare('any_value')).rejects.toThrow(new MissingParamError('hash'))
