@@ -28,4 +28,11 @@ describe('register routes', () => {
       })
       .expect(200)
   })
+
+  test('should return 400 when invalid credentials are provided', async () => {
+    await request(app)
+      .post('/api/register')
+      .send({})
+      .expect(400)
+  })
 })
