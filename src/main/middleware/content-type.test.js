@@ -1,8 +1,7 @@
 const request = require('supertest')
+let app
 
 describe('content-type middleware', () => {
-  let app
-
   beforeEach(() => {
     jest.resetModules()
     app = require('../config/app')
