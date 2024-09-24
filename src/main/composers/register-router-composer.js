@@ -8,24 +8,26 @@ const UpdateAccessTokenRepository = require('../../infra/repositories/update-acc
 const TokenGenerator = require('../../utils/helpers/token-generator')
 const env = require('../config/env')
 
-const emailValidator = new EmailValidator()
-const encrypter = new Encrypter()
-const tokenGenerator = new TokenGenerator(env.tokenSecret)
-const loadUserByEmailRepository = new LoadUserByEmailRepository()
-const createUserRepository = new CreateUserRepository()
-const updateAccessTokenRepository = new UpdateAccessTokenRepository()
-const authUseCase = new AuthUseCase({
-  loadUserByEmailRepository,
-  updateAccessTokenRepository,
-  encrypter,
-  tokenGenerator
-})
-const registerRouter = new RegisterRouter({
-  authUseCase,
-  emailValidator,
-  loadUserByEmailRepository,
-  createUserRepository,
-  encrypter
-})
-
-module.exports = registerRouter
+module.exports = class RegisterRouterComposer {
+  static compose () {
+    const emailValidator = new EmailValidator()
+    const encrypter = new Encrypter()
+    const tokenGenerator = new TokenGenerator(env.tokenSecret)
+    const loadUserByEmailRepository = new LoadUserByEmailRepository()
+    const createUserRepository = new CreateUserRepository()
+    const updateAccessTokenRepository = new UpdateAccessTokenRepository()
+    const authUseCase = new AuthUseCase({
+      loadUserByEmailRepository,
+      updateAccessTokenRepository,
+      encrypter,
+      tokenGenerator
+    })
+    return new RegisterRouter({
+      authUseCase,
+      emailValidator,
+      loadUserByEmailRepository,
+      createUserRepository,
+      encrypter
+    })
+  }
+}
