@@ -11,9 +11,6 @@ module.exports = {
   },
 
   async getCollection (name) {
-    if (!this.client) {
-      await this.connect(this.uri)
-    }
     return this.db.collection(name)
   }
 }

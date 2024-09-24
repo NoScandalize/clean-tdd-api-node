@@ -141,7 +141,7 @@ describe('register router', () => {
     }
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body).toEqual(new MissingParamError('username'))
+    expect(httpResponse.body.error).toBe(new MissingParamError('username').message)
   })
 
   test('should return 400 if email is not provided', async () => {
@@ -155,7 +155,7 @@ describe('register router', () => {
     }
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body).toEqual(new MissingParamError('email'))
+    expect(httpResponse.body.error).toBe(new MissingParamError('email').message)
   })
 
   test('should return 400 if password is not provided', async () => {
@@ -169,7 +169,7 @@ describe('register router', () => {
     }
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body).toEqual(new MissingParamError('password'))
+    expect(httpResponse.body.error).toBe(new MissingParamError('password').message)
   })
 
   test('should return 400 if confirmPassword is not provided', async () => {
@@ -183,7 +183,7 @@ describe('register router', () => {
     }
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body).toEqual(new MissingParamError('confirmPassword'))
+    expect(httpResponse.body.error).toBe(new MissingParamError('confirmPassword').message)
   })
 
   test('should return 400 if LoadUserByEmailRepository returns an already user', async () => {
@@ -199,21 +199,21 @@ describe('register router', () => {
     }
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body).toEqual(new AlreadyExistsError('email'))
+    expect(httpResponse.body.error).toBe(new AlreadyExistsError('email').message)
   })
 
   test('should return 500 if no httpRequest is provided', async () => {
     const { sut } = makeSut()
     const httpResponse = await sut.exec()
     expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
+    expect(httpResponse.body.error).toBe(new ServerError().message)
   })
 
   test('should return 500 if httpRequest has no body', async () => {
     const { sut } = makeSut()
     const httpResponse = await sut.exec({})
     expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
+    expect(httpResponse.body.error).toBe(new ServerError().message)
   })
 
   test('should return 400 if password is not equal to confirmPassword', async () => {
@@ -258,7 +258,7 @@ describe('register router', () => {
     }
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(401)
-    expect(httpResponse.body).toEqual(new UnauthorizedError())
+    expect(httpResponse.body.error).toBe(new UnauthorizedError().message)
   })
 
   test('should return 200 when valid credentials are provided', async () => {
@@ -289,7 +289,7 @@ describe('register router', () => {
     }
     const httpResponse = await sut.exec(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body).toEqual(new InvalidParamError('email'))
+    expect(httpResponse.body.error).toBe(new InvalidParamError('email').message)
   })
 
   test('should call EmailValidator with correct email', async () => {
@@ -429,7 +429,7 @@ describe('register router', () => {
       }
       const httpResponse = await sut.exec(httpRequest)
       expect(httpResponse.statusCode).toBe(500)
-      expect(httpResponse.body).toEqual(new ServerError())
+      expect(httpResponse.body.error).toBe(new ServerError().message)
     }
   })
 
@@ -477,7 +477,7 @@ describe('register router', () => {
       }
       const httpResponse = await sut.exec(httpRequest)
       expect(httpResponse.statusCode).toBe(500)
-      expect(httpResponse.body).toEqual(new ServerError())
+      expect(httpResponse.body.error).toBe(new ServerError().message)
     }
   })
 })
