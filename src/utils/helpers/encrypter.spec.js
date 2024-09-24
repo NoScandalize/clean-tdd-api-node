@@ -24,12 +24,23 @@ describe('encrypter', () => {
     const sut = makeSut()
     await sut.compare('any_value', 'hashed_value')
     expect(bcrypt.value).toBe('any_value')
-    expect(bcrypt.hash).toBe('hashed_value')
+    expect(bcrypt.hashValue).toBe('hashed_value')
   })
 
   test('should throw if no params are provided', async () => {
     const sut = makeSut()
     expect(sut.compare()).rejects.toThrow(new MissingParamError('value'))
     expect(sut.compare('any_value')).rejects.toThrow(new MissingParamError('hash'))
+  })
+
+  test('should call bcrypt with correct value in encrypt method', async () => {
+    const sut = makeSut()
+    bcrypt.saltValue = 'any_salt'
+    bcrypt.hashResult = 'any_hash'
+    const hash = await sut.encrypt('any_value', 10)
+    expect(bcrypt.value).toBe('any_value')
+    expect(bcrypt.saltRounded).toBe(10)
+    expect(bcrypt.salt).toBe('any_salt')
+    expect(hash).toBe('any_hash')
   })
 })

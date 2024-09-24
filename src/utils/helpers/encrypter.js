@@ -12,4 +12,10 @@ module.exports = class Encrypter {
     const isValid = await bcrypt.compare(value, hash)
     return isValid
   }
+
+  async encrypt (value, saltRounded) {
+    const salt = await bcrypt.genSalt(saltRounded)
+    const hash = await bcrypt.hash(value, salt)
+    return hash
+  }
 }
